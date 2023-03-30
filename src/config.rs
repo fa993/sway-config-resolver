@@ -112,7 +112,7 @@ impl Directive {
                         let p = t.map_err(|e| SwayIOError::PathNotFound {
                             path: e.path().to_string_lossy().to_string(),
                         })?;
-                        if p.file_name().is_some() && seen.insert(FilePath { inner: p.clone() }) {
+                        if p.file_name().is_some() && seen.insert(FileName { inner: p.clone() }) {
                             conf.read_config(p.as_path())?;
                         }
                     }
@@ -133,11 +133,11 @@ impl Directive {
 }
 
 #[derive(Eq)]
-struct FilePath<T: AsRef<Path>> {
+struct FileName<T: AsRef<Path>> {
     inner: T,
 }
 
-impl<T: AsRef<Path>> PartialEq for FilePath<T> {
+impl<T: AsRef<Path>> PartialEq for FileName<T> {
     fn eq(&self, other: &Self) -> bool {
         self.inner
             .as_ref()
@@ -146,7 +146,7 @@ impl<T: AsRef<Path>> PartialEq for FilePath<T> {
     }
 }
 
-impl<T: AsRef<Path>> Hash for FilePath<T> {
+impl<T: AsRef<Path>> Hash for FileName<T> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.inner.as_ref().file_name().hash(state)
     }
