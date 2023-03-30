@@ -11,6 +11,8 @@ If you are on Unix systems the OS will expand glob patterns automatically so you
 
 alternatively you could also run 
 
-```cargo test``` to run the inbuilt tests. They should work on unix and as long as you navigate to the project directory before running,
+```cargo test``` 
+
+to run the inbuilt tests. They should work on unix and as long as you navigate to the project directory before running,
 As these tests depend on the PWD environment variable to locate the config files.
 
