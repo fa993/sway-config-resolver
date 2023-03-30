@@ -6,7 +6,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::error::SwayIOError;
+use crate::error::{path_to_error_string, SwayIOError};
 
 #[derive(Debug)]
 pub struct Config {
@@ -32,14 +32,14 @@ impl Config {
 
     pub fn read_config(&mut self, path: &Path) -> Result<(), SwayIOError> {
         let r = path.canonicalize().map_err(|_| SwayIOError::PathNotFound {
-            path: path.to_string_lossy().to_string(),
+            path: path_to_error_string(&path),
         })?;
         if !self.push_config(&r) {
             //Do nothing, not an error but
             return Ok(());
         }
         let f = File::open(path).map_err(|_| SwayIOError::FileOpenError {
-            file_name: path.to_string_lossy().to_string(),
+            file_name: path_to_error_string(&path),
         })?;
         let mut yy = BufReader::new(f).lines();
         while let Some(Ok(t)) = yy.next() {
@@ -91,11 +91,9 @@ impl Directive {
                     }
                 })?;
                 for t in glob::glob(&po).map_err(|_| SwayIOError::PathNotFound {
-                    path: f_pattern.to_string(),
+                    path: f_pattern.clone(),
                 })? {
-                    let p = t.map_err(|e| SwayIOError::PathNotFound {
-                        path: e.path().to_string_lossy().to_string(),
-                    })?;
+                    let p = t.map_err(|e| SwayIOError::path_not_found(&e.path()))?;
                     if p.file_name().is_some() {
                         conf.read_config(p.as_path())?;
                     }
@@ -110,7 +108,7 @@ impl Directive {
                         path: f.msg.to_string(),
                     })? {
                         let p = t.map_err(|e| SwayIOError::PathNotFound {
-                            path: e.path().to_string_lossy().to_string(),
+                            path: path_to_error_string(&e.path()),
                         })?;
                         if p.file_name().is_some() && seen.insert(FileName { inner: p.clone() }) {
                             conf.read_config(p.as_path())?;
