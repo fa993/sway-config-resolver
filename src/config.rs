@@ -8,7 +8,7 @@ use std::{
 
 use crate::error::{path_to_error_string, SwayIOError};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Config {
     active: bool,
     font: String,
@@ -26,6 +26,14 @@ impl Default for Config {
 }
 
 impl Config {
+    pub fn new(active: bool, font: String, seen_configs: HashSet<PathBuf>) -> Config {
+        Config {
+            active,
+            font,
+            seen_configs,
+        }
+    }
+
     fn push_config(&mut self, path: &Path) -> bool {
         self.seen_configs.insert(path.to_path_buf())
     }
@@ -63,7 +71,7 @@ impl Directive {
         let trimed = line.trim();
         if trimed.starts_with('#') || trimed.is_empty() {
             Ok(Directive::NOP)
-        } else if let Some(t) = trimed.strip_prefix("include one ") {
+        } else if let Some(t) = trimed.strip_prefix("include_one ") {
             Ok(Directive::IncludeOne(
                 t.to_string()
                     .split_whitespace()

@@ -1,6 +1,6 @@
 use std::path::Path;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum SwayIOError {
     FileOpenError { file_name: String },
     PathNotFound { path: String },
