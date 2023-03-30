@@ -42,7 +42,7 @@ impl Config {
         let r = path.canonicalize().map_err(|_| SwayIOError::PathNotFound {
             path: path_to_error_string(&path),
         })?;
-        if !self.push_config(&r) {
+        if !r.is_file() || !self.push_config(&r) {
             //Do nothing, not an error but
             return Ok(());
         }

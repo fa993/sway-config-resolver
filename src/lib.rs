@@ -11,7 +11,6 @@ pub fn parse_configs(
     conf: &mut Config,
 ) -> Result<(), SwayIOError> {
     for t in files_to_parse {
-        println!("{t}");
         conf.read_config(Path::new(&t))?;
     }
     Ok(())
